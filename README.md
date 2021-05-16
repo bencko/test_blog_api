@@ -10,3 +10,4 @@
 5 - run server "python manage.py runserver" and go to documentation page
 # Project info
 .../api-docs/  - <b>documentation page</b>
+I have developed <b>1,2,3,4 task items</b> and tested them.
