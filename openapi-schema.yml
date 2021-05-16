@@ -1,0 +1,197 @@
+openapi: 3.0.2
+info:
+  title: ''
+  version: ''
+paths:
+  /api/user/all/{sorting}/:
+    get:
+      operationId: retrieveUser
+      description: "User list endpoint\n\nOptional parameter - {sorting}\n\n{sorting}\
+        \ can be \"from_max\" or \"from_min\"\n\n    Example - .../api/user/all/from_max\
+        \            - return all users ordered by total posts from max  count\n\n\
+        \    Example - .../api/user/all/from_min            - return all users ordered\
+        \ by total posts from min  count"
+      parameters:
+      - name: sorting
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+      tags:
+      - api
+  /api/post/from_user/{id}/:
+    get:
+      operationId: retrievePost
+      description: "Return post list from current user.id\n\n    Example - .../api/post/from_user/1\
+        \            - return all post of user which id=1"
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
+      tags:
+      - api
+  /api/user/create/:
+    post:
+      operationId: createUser
+      description: "Creation user endpoint\n\n    Need unique email, unique username\
+        \ and strong password"
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+      tags:
+      - api
+  /api/user/api-token-auth/:
+    post:
+      operationId: createAuthToken
+      description: "Send to this endpoint username and password    and it return token\
+        \ for this account\n\n    Add to request headers \"Authorization: Token {{here_your_token}}\"\
+        \n    Example - \"Authorization: Token 5e8fc751d300537ab11ba793edc345c890698140\"\
+        \nAnd now you is authenticated"
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AuthToken'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AuthToken'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthToken'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+          description: ''
+      tags:
+      - api
+  /api/post/create/:
+    post:
+      operationId: createPost
+      description: "Post creation endpoint\n\n    only for authenticated users"
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Post'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Post'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
+      tags:
+      - api
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+\z
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        total_posts:
+          type: string
+          readOnly: true
+      required:
+      - username
+      - email
+      - password
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        text:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - title
+      - text
+    AuthToken:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        token:
+          type: string
+          readOnly: true
+      required:
+      - username
+      - password
