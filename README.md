@@ -12,3 +12,5 @@
 .../api-docs/  - <b>documentation page</b>
 <br>
 I have developed <b>1,2,3,4 and 8 task items</b> and tested them.
+<br>
+The tasks are located in test_task.pdf file
