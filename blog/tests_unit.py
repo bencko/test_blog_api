@@ -10,7 +10,7 @@ from rest_framework.test import APIRequestFactory
 
 class BlogTest(APITestCase):
     def setUp(self):
-        # We want to go ahead and originally create a user. 
+        # Create test_user instance directly from the User model manager. 
         self.test_user = User.objects.create_user(
             'testuser',
             'test@example.com',
@@ -71,6 +71,7 @@ class BlogTest(APITestCase):
         """
         need_posts = 15
         post_counter = 0
+        
         # create 3 posts to testuser 
         for i in range(1, need_posts, 1):
             post_title = 'Post# %s' % (i)

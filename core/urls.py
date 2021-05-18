@@ -27,8 +27,8 @@ urlpatterns = [
         version="1.0.0"
     ), name='openapi-schema'),
     path('admin/', admin.site.urls),
-    path('api/user/', include('accounts.urls')),
-    path('api/post/', include('blog.urls')),
+    path('api/users/', include('accounts.urls')),
+    path('api/posts/', include('blog.urls')),
     path('api-docs/', TemplateView.as_view(
         template_name='swagger-ui.html',
         extra_context={'schema_url':'openapi-schema'}

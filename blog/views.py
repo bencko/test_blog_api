@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, mixins
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from . import serializers
@@ -14,19 +14,9 @@ class PostCreate(generics.CreateAPIView):
     serializer_class = serializers.PostSerializer
     permission_classes = [IsAuthenticated]
 
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-
-class UserPostList(generics.ListAPIView):
-    """
-        Return post list from current user.id\n
-            Example - .../api/post/from_user/1\
-            - return all post of user which id=1
-    """
-    serializer_class = serializers.PostSerializer
-    permission_classes = [AllowAny]
-
-    def get_queryset(self, *args, **kwargs):
-        qs = Post.objects.filter(owner_id=self.kwargs['pk'])
-        return qs

@@ -2,15 +2,20 @@ from django.urls import path
 
 from rest_framework.authtoken import views as token_auth_views
 
-from .views import UserList, UserCreate, ObtainAuthToken, redirect_to_from_max
+from .views import UserCreateOrListView,\
+   UserOperateView, ObtainAuthToken,\
+   SubscribeCreateOrListView, SubscribeOperateView,\
+   UserPostsView
 
 
 
 
 urlpatterns = [
-    path('create/', UserCreate.as_view(), name='account-create'), # tests work
-    path('all/', redirect_to_from_max),
-    path('all/<str:sorting>/', UserList.as_view(), name='all-users-list'), # tests work
-    path('api-token-auth/', ObtainAuthToken.as_view(), name='get-token'), # tests work
+    path('subscribes/<int:pk>/', SubscribeOperateView.as_view(), name='subscribe-operate-view'),
+    path('subscribes/', SubscribeCreateOrListView.as_view(), name='subscribe-create-or-list'),
+    path('<int:pk>/posts/', UserPostsView.as_view(), name='user-posts-view'),
+    path('<int:pk>/', UserOperateView.as_view(), name='user-operate-view'),
+    path('api-token-auth/', ObtainAuthToken.as_view(), name='get-token'), 
+    path('', UserCreateOrListView.as_view(), name='user-create-or-list'), 
 ]
 

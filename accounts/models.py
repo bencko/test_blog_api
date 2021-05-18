@@ -16,3 +16,22 @@ get_user_model()._meta.get_field('email').null = False
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_subscribes_list(sender, instance=None, created=False, **kwargs):
+    if created:
+        SubscribesList.objects.create(owner=instance)
+
+
+class Subscribe(models.Model):
+    to = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return 'to %s' % self.to
+
+class SubscribesList(models.Model):
+    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+    subscribed_to = models.ManyToManyField('Subscribe', blank=True)
+
+    def __str__(self):
+    	return 'from %s' % self.owner
