@@ -3,7 +3,6 @@ from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 from rest_framework import status
 from .models import Post
-from .views import UserPostList
 import time
 from rest_framework.test import APIRequestFactory
 
@@ -65,31 +64,124 @@ class BlogTest(APITestCase):
         response = self.client.post(self.create_url, data, format='json')
         self.assertEqual(response.data['owner'], self.test_user.id)
 
-    def test_posts_ordering_from_creation_date(self):
-        """
-        Ensure the user posts ordering from creation date
-        """
-        need_posts = 15
-        post_counter = 0
-        
-        # create 3 posts to testuser 
-        for i in range(1, need_posts, 1):
-            post_title = 'Post# %s' % (i)
+   
+
+"""
+def test_users_sorting_from_max_posts(self):
+        ""
+        Check users sorting from max posts.
+        If its work rigth the user which have maximum posts\
+        must be first in the response.data
+        ""
+        # create user which have a 3 posts
+        max_posts_user = self.test_user
+
+        # create 3 posts to max_posts_user
+        for iter in range(1,4,1):
+            post_title = "Post# %s" % (iter)
             Post.objects.create(
-                owner=self.test_user,
+                owner=max_posts_user,
                 title=post_title,
                 text='test_text'
             )
-            time.sleep(0.05)
-            post_counter = i
-        
-        view = UserPostList.as_view()
+
+        # create user which have a 2 posts
+        middle_posts_user = User.objects.create_user(
+            'middle_posts_user',
+            'test2@example.com',
+            'testpassword2'
+        )
+
+        # create 2 posts to middle_posts_user
+        for iter in range(1,3,1):
+            post_title = "Post# %s" % (iter)
+            Post.objects.create(
+                owner=middle_posts_user,
+                title=post_title,
+                text='test_text'
+            )
+
+        # create user which have a 1 post
+        min_posts_user = User.objects.create_user(
+            'min_posts_user',
+            'test3@example.com',
+            'testpassword3'
+        )
+
+        # create 1 post to min_posts_user
+        for iter in range(1,2,1):
+            post_title = "Post# %s" % (iter)
+            Post.objects.create(
+                owner=min_posts_user,
+                title=post_title,
+                text='test_text'
+            )
+
+        # request to page all users with ordering from max posts
+        view = UserList.as_view()
         factory = APIRequestFactory()
-        user_id = self.test_user.id
-        request = factory.get('/api/post/from_user/%s' % (user_id))
-        response = view(request, pk=user_id)
-        result = response.render()
-        # check if last created post on top of response data
-        last_post = Post.objects.all().order_by('-created_at')[0]
-        self.assertEqual(result.data[0]['id'], last_post.id)
+        request_max = factory.get('/api/user/all/from_max')
+        response_with_max_sorting = view(request_max, sorting='from_max')
+        result_max = response_with_max_sorting.render()
+        # check if max_posts_user on top of response data
+        self.assertEqual(result_max.data[0]['username'], max_posts_user.username)
+    
+    def test_users_sorting_from_min_posts(self):
+        ""
+        Check users sorting from min posts.
+        If its work rigth the user which have minimum posts\
+        must be first in the response.data
+        ""
+        # create user which have a 3 posts
+        max_posts_user = self.test_user
+
+        # create 3 posts to max_posts_user
+        for iter in range(1,4,1):
+            post_title = "Post# %s" % (iter)
+            Post.objects.create(
+                owner=max_posts_user,
+                title=post_title,
+                text='test_text'
+            )
+
+        # create user which have a 2 posts
+        middle_posts_user = User.objects.create_user(
+            'middle_posts_user',
+            'test2@example.com',
+            'testpassword2'
+        )
+
+        # create 2 posts to middle_posts_user
+        for iter in range(1,3,1):
+            post_title = "Post# %s" % (iter)
+            Post.objects.create(
+                owner=middle_posts_user,
+                title=post_title,
+                text='test_text'
+            )
+
+        # create user which have a 1 post
+        min_posts_user = User.objects.create_user(
+            'min_posts_user',
+            'test3@example.com',
+            'testpassword3'
+        )
         
+        # create 1 post to min_posts_user
+        for iter in range(1,2,1):
+            post_title = "Post# %s" % (iter)
+            Post.objects.create(
+                owner=min_posts_user,
+                title=post_title,
+                text='test_text'
+            )
+
+        # request to page all users with ordering from min posts
+        view = UserList.as_view()
+        factory = APIRequestFactory()
+        request_min = factory.get('/api/user/all/from_min')
+        response_with_min_sorting = view(request_min, sorting='from_min')
+        result_min = response_with_min_sorting.render()
+        # check if min_posts_user on top of response data
+        self.assertEqual(result_min.data[0]['username'], min_posts_user.username)
+"""

@@ -11,7 +11,7 @@ class IntegrityTest(APITestCase):
         #self.test_user = User.objects.create_user('testuser', 'test@example.com', 'testpassword')
 
         # URL for creating a post.
-        self.create_user_url = reverse('account-create')
+        self.create_user_url = reverse('user-create-or-list')
         self.create_post_url = reverse('post-create')
 
 
