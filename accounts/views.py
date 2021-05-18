@@ -14,6 +14,10 @@ from blog.models import Post
 from . import serializers
 from .models import SubscribesList, Subscribe
 from blog.serializers import PostSerializer
+
+
+from itertools import chain
+
 class ObtainAuthToken(auth_views.ObtainAuthToken):
     """
     Send to this endpoint username and password\
@@ -109,7 +113,7 @@ class SubscribeCreateOrListView(mixins.ListModelMixin,
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            request_user_subs_list = SubscribesList.objects.get(owner=request.user)
+            request_user_subs_list = request.user.get_subs_list()
             subscribed = False
             try:
                 if request_user_subs_list.subscribed_to.all().get(to=request.POST.get('to')):
@@ -138,3 +142,23 @@ class SubscribeOperateView(generics.GenericAPIView, mixins.DestroyModelMixin):
 
 
 
+class FeedView(generics.GenericAPIView, mixins.ListModelMixin):
+    serializer_class = serializers.UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self, *args, **kwargs):
+        return Post.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        request_user_subs_list = request.user.get_subs_list()
+        qs = Post.objects.none()
+
+        for subs in request_user_subs_list.subscribed_to.all():
+            to_user = subs.to
+            created = subs.subscribed_time
+            subs_posts = to_user.get_posts_from_date(created)
+            qs = list(chain(qs, subs_posts))
+        print(qs)
+        serializer = PostSerializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+            
