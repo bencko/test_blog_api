@@ -14,3 +14,17 @@ class Post(models.Model):
 
     def __str__(self):
         return str(self.title)
+
+
+class Subscribe(models.Model):
+    to = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    subscribed_time = models.DateTimeField(auto_now_add=True, verbose_name='subscribed_time', blank=True)
+    def __str__(self):
+        return 'to %s' % self.to
+
+class SubscribesList(models.Model):
+    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+    subscribed_to = models.ManyToManyField('Subscribe', blank=True)
+
+    def __str__(self):
+        return 'from %s' % self.owner

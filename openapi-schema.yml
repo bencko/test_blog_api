@@ -3,16 +3,68 @@ info:
   title: ''
   version: ''
 paths:
-  /api/user/all/{sorting}/:
+  /api/users/feed/:
+    get:
+      operationId: listUsers
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+          description: ''
+      tags:
+      - api
+  /api/users/subscribes/:
+    get:
+      operationId: listSubscribes
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subscribe'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createSubscribe
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subscribe'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Subscribe'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Subscribe'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscribe'
+          description: ''
+      tags:
+      - api
+  /api/users/{id}/posts/:
     get:
       operationId: retrieveUser
-      description: "User list endpoint\n\nOptional parameter - {sorting}\n\n{sorting}\
-        \ can be \"from_max\" or \"from_min\"\n\n    Example - .../api/user/all/from_max\
-        \            - return all users ordered by total posts from max  count\n\n\
-        \    Example - .../api/user/all/from_min            - return all users ordered\
-        \ by total posts from min  count"
+      description: ''
       parameters:
-      - name: sorting
+      - name: id
         in: path
         required: true
         description: ''
@@ -27,16 +79,16 @@ paths:
           description: ''
       tags:
       - api
-  /api/post/from_user/{id}/:
+  /api/users/{id}/:
     get:
-      operationId: retrievePost
-      description: "Return post list from current user.id\n\n    Example - .../api/post/from_user/1\
-        \            - return all post of user which id=1"
+      operationId: retrieveUser
+      description: ''
       parameters:
       - name: id
         in: path
         required: true
-        description: ''
+        description: "A unique integer value identifying this \u043F\u043E\u043B\u044C\
+          \u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C."
         schema:
           type: string
       responses:
@@ -44,15 +96,35 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Post'
+                $ref: '#/components/schemas/User'
           description: ''
       tags:
       - api
-  /api/user/create/:
+  /api/users/:
+    get:
+      operationId: listUsers
+      description: "Creation and list  user endpoint\n\n    If create - need unique\
+        \ email, unique username and strong password\n    If get list - need get parameter\
+        \ \"sorting\"\n\n    ex. - .../users?sorting=from_min\n\n    ex. - .../users?sorting=from_max\n\
+        \    \n\n    Default sorting - from_max"
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+          description: ''
+      tags:
+      - api
     post:
       operationId: createUser
-      description: "Creation user endpoint\n\n    Need unique email, unique username\
-        \ and strong password"
+      description: "Creation and list  user endpoint\n\n    If create - need unique\
+        \ email, unique username and strong password\n    If get list - need get parameter\
+        \ \"sorting\"\n\n    ex. - .../users?sorting=from_min\n\n    ex. - .../users?sorting=from_max\n\
+        \    \n\n    Default sorting - from_max"
       parameters: []
       requestBody:
         content:
@@ -74,7 +146,7 @@ paths:
           description: ''
       tags:
       - api
-  /api/user/api-token-auth/:
+  /api/users/api-token-auth/:
     post:
       operationId: createAuthToken
       description: "Send to this endpoint username and password    and it return token\
@@ -102,7 +174,7 @@ paths:
           description: ''
       tags:
       - api
-  /api/post/create/:
+  /api/posts/:
     post:
       operationId: createPost
       description: "Post creation endpoint\n\n    only for authenticated users"
@@ -127,6 +199,22 @@ paths:
           description: ''
       tags:
       - api
+  /api/users/subscribes/{sub_id}/:
+    delete:
+      operationId: destroySubscribe
+      description: ''
+      parameters:
+      - name: sub_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
 components:
   schemas:
     User:
@@ -137,8 +225,11 @@ components:
           readOnly: true
         username:
           type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
+          description: "\u041E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\
+            \u043E\u0435 \u043F\u043E\u043B\u0435. \u041D\u0435 \u0431\u043E\u043B\
+            \u0435\u0435 150 \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432. \u0422\
+            \u043E\u043B\u044C\u043A\u043E \u0431\u0443\u043A\u0432\u044B, \u0446\u0438\
+            \u0444\u0440\u044B \u0438 \u0441\u0438\u043C\u0432\u043E\u043B\u044B @/./+/-/_."
           pattern: ^[\w.@+-]+\z
           maxLength: 150
         first_name:
@@ -162,24 +253,16 @@ components:
       - username
       - email
       - password
-    Post:
+    Subscribe:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
-        title:
-          type: string
-          maxLength: 100
-        text:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
+        to:
+          type: integer
       required:
-      - title
-      - text
+      - to
     AuthToken:
       type: object
       properties:
@@ -195,3 +278,24 @@ components:
       required:
       - username
       - password
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        text:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        owner:
+          type: string
+          readOnly: true
+      required:
+      - title
+      - text

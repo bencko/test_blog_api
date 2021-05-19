@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import Post
+from .models import Post, Subscribe
+
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -17,3 +18,8 @@ class PostSerializer(serializers.ModelSerializer):
         }
 
   
+
+class SubscribeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscribe
+        fields = ['id', 'to']

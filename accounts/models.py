@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
-from blog.models import Post
+from blog.models import Post, SubscribesList
 from datetime import datetime
 
 # set the email field in user model unique and required
@@ -39,16 +39,3 @@ get_user_model().add_to_class("get_subs_list", get_subs_list)
 get_user_model().add_to_class("get_posts_from_date", get_posts_from_date)
 
 
-
-class Subscribe(models.Model):
-    to = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    subscribed_time = models.DateTimeField(auto_now_add=True, verbose_name='subscribed_time', blank=True)
-    def __str__(self):
-        return 'to %s' % self.to
-
-class SubscribesList(models.Model):
-    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
-    subscribed_to = models.ManyToManyField('Subscribe', blank=True)
-
-    def __str__(self):
-    	return 'from %s' % self.owner

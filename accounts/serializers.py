@@ -4,7 +4,6 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from blog.models import Post
-from .models import Subscribe
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -32,8 +31,4 @@ class UserSerializer(serializers.ModelSerializer):
         return Post.objects.filter(owner_id=user.id).count()
 
 
-class SubscribeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Subscribe
-        fields = ['id', 'to']
     
