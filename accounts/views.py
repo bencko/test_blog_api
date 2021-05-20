@@ -1,22 +1,17 @@
-from django.contrib.auth import get_user_model
-from django.shortcuts import redirect
 
+import operator
+from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import generics, views
 from rest_framework import mixins
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.authtoken import views as auth_views
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 
-from blog.models import Post
-
 from . import serializers
-from blog.models import SubscribesList, Subscribe
-from blog.serializers import PostSerializer
 
 
-from itertools import chain
 
 class ObtainAuthToken(auth_views.ObtainAuthToken):
     """
@@ -47,9 +42,13 @@ class UserCreateOrListView(mixins.ListModelMixin,
     permission_classes = [AllowAny]
 
     def get_queryset(self, *args, **kwargs):
-        return get_user_model().objects.all()
+        qs = get_user_model().objects.all()
+        return qs
 
     def post(self, request, *args, **kwargs):
+        return self.create(request)
+
+    def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -61,15 +60,18 @@ class UserCreateOrListView(mixins.ListModelMixin,
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request,  *args, **kwargs):
-        sorting = request.GET.get('sorting', 'from_max')
-        qs = self.get_queryset()
-        serializer = self.serializer_class(qs, many=True)
-        res = serializer.data
-        res = self.sorted_serializer_data(res, sorting=sorting)
-        return Response(res, status=status.HTTP_200_OK)
-    
+        return self.list(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        serializer = self.serializer_class(self.get_queryset(), many=True)
+        if serializer.data:
+            sorting = request.GET.get('sorting', 'from_max')
+            data = self._sorted_serializer_data(serializer.data, sorting)
+            return Response(data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+
     # method for sorting serialized data
-    def sorted_serializer_data(self, data, sorting='from_max'):
+    def _sorted_serializer_data(self, data, sorting='from_max'):
         if sorting == 'from_max':
             return sorted(data, key=lambda k: k['total_posts'], reverse=True)
         return sorted(data, key=lambda k: k['total_posts'])

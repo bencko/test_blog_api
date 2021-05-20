@@ -30,9 +30,8 @@ def get_subs_list(self):
     return my_subs_list
 
 def get_posts_from_date(self, start_date):
-
     today = datetime.today()
-    posts = Post.objects.filter(created_at__range=[start_date, today])
+    posts = Post.objects.filter(owner=self, created_at__range=[start_date, today])
     return posts
 
 get_user_model().add_to_class("get_subs_list", get_subs_list)

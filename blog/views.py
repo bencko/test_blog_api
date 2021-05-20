@@ -1,17 +1,16 @@
+from itertools import chain
+
 from django.contrib.auth import get_user_model
-
-
 from rest_framework import generics, mixins
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from itertools import chain
-
 from . import serializers
 from .models import Post, Subscribe
 from .paginators import UserPostsResultsPagination
 
+import operator
 
 class PostCreate(generics.CreateAPIView):
     """
@@ -28,41 +27,49 @@ class PostCreate(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+
+
 class FeedView(generics.GenericAPIView, mixins.ListModelMixin):
     serializer_class = serializers.PostSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = UserPostsResultsPagination
-
+    #если юзать self.list() - то возвращает тупо этот сет, чтобы ты не передал в self.list()
     def get_queryset(self, *args, **kwargs):
-        return Post.objects.all()
+        qs = Post.objects.none()
+        try:
+            user_subscriptions = self.request.user.get_subs_list()
+            if user_subscriptions is not None:
+                for subs in user_subscriptions.subscribed_to.all():
+                    to_user = subs.to
+                    created = subs.subscribed_time
+                    subs_posts = to_user.get_posts_from_date(created)
+                    qs = list(chain(qs, subs_posts))
+                return self._sorted(qs)
+        except:
+            return qs
+            
+    def _sorted(self, data, sorting='from_max'):
+        return sorted(data, key=operator.attrgetter('created_at'), reverse=True)
 
     def get(self, request, *args, **kwargs):
-        request_user_subs_list = request.user.get_subs_list()
-        qs = Post.objects.none()
-
-        for subs in request_user_subs_list.subscribed_to.all():
-            to_user = subs.to
-            created = subs.subscribed_time
-            subs_posts = to_user.get_posts_from_date(created)
-            qs = list(chain(qs, subs_posts))
-        print(qs)
-        serializer = self.serializer_class(qs, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self.list(request, *args, **kwargs)
 
 
 class UserPostsView(generics.GenericAPIView, mixins.ListModelMixin):
     serializer_class = serializers.PostSerializer
     permission_classes = [AllowAny]
-    
 
     def get_queryset(self):
-        return get_user_model().objects.all()
-
+        try:
+            from_user = get_user_model().objects.get(id=self.kwargs['pk'])
+            if from_user is not None:
+                qs = Post.objects.filter(owner=from_user)
+                return qs
+        except:
+            return Post.objects.none()
+        
     def get(self, request, *args, **kwargs):
-        from_user = self.get_object()
-        qs = Post.objects.filter(owner=from_user)
-        serializer = self.serializer_class(qs, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+       return self.list(request, *args, **kwargs)
 
 
 class SubscribeCreateOrListView(mixins.ListModelMixin,
@@ -78,6 +85,9 @@ class SubscribeCreateOrListView(mixins.ListModelMixin,
         return self.list(request, *args, **kwargs)
     
     def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             request_user_subs_list = request.user.get_subs_list()
