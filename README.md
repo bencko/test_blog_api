@@ -11,6 +11,8 @@
 # Project info
 .../api-docs/  - <b>documentation page</b>
 <br>
-I have developed <b>1,2,3,4 and 8 task items</b> and tested them.
+I have developed <b>1,2,3,4,5,6 and 8 task items</b> and tested them.
 <br>
 The tasks are located in test_task.pdf file
+
+# See issues to understand what i need develop in the near future
