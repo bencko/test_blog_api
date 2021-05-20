@@ -3,7 +3,8 @@ from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework import status
-from .views import UserCreateOrListView, UserPostsView, UserOperateView
+from .views import UserCreateOrListView, UserOperateView
+from blog.views import UserPostsView
 from blog.models import Post
 import time
 from rest_framework.test import APIRequestFactory
