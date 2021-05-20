@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Post, Subscribe
+from .models import Post, Subscribe, ReadedPost
 
 
 
@@ -23,3 +23,9 @@ class SubscribeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscribe
         fields = ['id', 'to']
+
+
+class ReadedPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReadedPost
+        fields = ['id', 'post', 'readed_time']

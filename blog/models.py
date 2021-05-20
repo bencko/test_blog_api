@@ -28,3 +28,16 @@ class SubscribesList(models.Model):
 
     def __str__(self):
         return 'from %s' % self.owner
+
+class ReadedPostsList(models.Model):
+    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+    were_read = models.ManyToManyField('ReadedPost', blank=True)
+
+    def __str__(self):
+        return 'Readed by %s' % self.owner
+
+class ReadedPost(models.Model):
+    post = models.ForeignKey('Post', on_delete=models.CASCADE)
+    readed_time = models.DateTimeField(auto_now_add=True, verbose_name='subscribed_time', blank=True)
+    def __str__(self):
+        return 'Readed post - %s' % self.post
