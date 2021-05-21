@@ -1,0 +1,371 @@
+openapi: 3.0.2
+info:
+  title: ''
+  version: ''
+paths:
+  /api/users/{id}/:
+    get:
+      operationId: retrieveUser
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: "A unique integer value identifying this \u043F\u043E\u043B\u044C\
+          \u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C."
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+      tags:
+      - api
+  /api/users/:
+    get:
+      operationId: listUsers
+      description: "Creation and list  user endpoint\n\n    If create - need unique\
+        \ email, unique username and strong password\n    If get list - need get parameter\
+        \ \"sorting\"\n\n    ex. - .../users?sorting=from_min\n\n    ex. - .../users?sorting=from_max\n\
+        \    \n\n    Default sorting - from_max"
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createUser
+      description: "Creation and list  user endpoint\n\n    If create - need unique\
+        \ email, unique username and strong password\n    If get list - need get parameter\
+        \ \"sorting\"\n\n    ex. - .../users?sorting=from_min\n\n    ex. - .../users?sorting=from_max\n\
+        \    \n\n    Default sorting - from_max"
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+      tags:
+      - api
+  /api/blog/feed/:
+    get:
+      operationId: listPosts
+      description: ''
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: user_posts_page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=4
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=2
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+          description: ''
+      tags:
+      - api
+  /api/blog/{id}/posts/:
+    get:
+      operationId: listPosts
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+          description: ''
+      tags:
+      - api
+  /api/blog/subscribes/:
+    get:
+      operationId: listSubscribes
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subscribe'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createSubscribe
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subscribe'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Subscribe'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Subscribe'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscribe'
+          description: ''
+      tags:
+      - api
+  /api/blog/readed/:
+    get:
+      operationId: listSubscribes
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subscribe'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createSubscribe
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subscribe'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Subscribe'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Subscribe'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscribe'
+          description: ''
+      tags:
+      - api
+  /api/users/api-token-auth/:
+    post:
+      operationId: createAuthToken
+      description: "Send to this endpoint username and password    and it return token\
+        \ for this account\n\n    Add to request headers \"Authorization: Token {{here_your_token}}\"\
+        \n    Example - \"Authorization: Token 5e8fc751d300537ab11ba793edc345c890698140\"\
+        \nAnd now you is authenticated"
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AuthToken'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AuthToken'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthToken'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+          description: ''
+      tags:
+      - api
+  /api/blog/:
+    post:
+      operationId: createPost
+      description: "Post creation endpoint\n\n    only for authenticated users"
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Post'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Post'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
+      tags:
+      - api
+  /api/blog/subscribes/{id}/:
+    delete:
+      operationId: destroySubscribe
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: "\u041E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\
+            \u043E\u0435 \u043F\u043E\u043B\u0435. \u041D\u0435 \u0431\u043E\u043B\
+            \u0435\u0435 150 \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432. \u0422\
+            \u043E\u043B\u044C\u043A\u043E \u0431\u0443\u043A\u0432\u044B, \u0446\u0438\
+            \u0444\u0440\u044B \u0438 \u0441\u0438\u043C\u0432\u043E\u043B\u044B @/./+/-/_."
+          pattern: ^[\w.@+-]+\z
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        total_posts:
+          type: string
+          readOnly: true
+      required:
+      - username
+      - email
+      - password
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        text:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        owner:
+          type: string
+          readOnly: true
+      required:
+      - title
+      - text
+    Subscribe:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        to:
+          type: integer
+      required:
+      - to
+    AuthToken:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        token:
+          type: string
+          readOnly: true
+      required:
+      - username
+      - password
