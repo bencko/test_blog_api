@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-# test_blog_api
+
 Test blog API
 =======
 # Installing
@@ -20,4 +19,4 @@ I have developed <b>1,2,3,4,5,6,7 and 8 task items</b>, but tested only part.
 The tasks are located in test_task.pdf file
 
 # See issues to understand what i need develop in the near future
->>>>>>> development
+
