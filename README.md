@@ -14,7 +14,7 @@ Test blog API
 # Project info
 .../api-docs/  - <b>documentation page</b>
 <br>
-I have developed <b>1,2,3,4,5,6,7 and 8 task items</b>, and testing it.
+I have developed <b>1,2,3,4,5,6,7 and 8 task items using PEP8 code recomendations</b>, and testing it.
 <br>
 The tasks are located in test_task.pdf file
 
