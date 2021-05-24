@@ -167,7 +167,7 @@ class SubscribeCreateOrListView(mixins.ListModelMixin,
             request_user_subs_list = request.user.get_subs_list()
             subscribed = False
             try:
-                if request_user_subs_list.subscribed_to.all()
+                if request_user_subs_list.subscribed_to.all()\
                 .get(to_id=request.data.get('to')):
                     subscribed = True
                     return Response(
