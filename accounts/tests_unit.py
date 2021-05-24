@@ -8,9 +8,10 @@ from blog.models import Post
 
 from rest_framework.test import APIRequestFactory
 
+
 class AccountsTest(APITestCase):
     def setUp(self):
-        # We want to go ahead and originally create a user. 
+        # We want to go ahead and originally create a user.
         self.test_user = User.objects.create_user(
             'testuser',
             'test@example.com',
@@ -29,7 +30,11 @@ class AccountsTest(APITestCase):
                 'password': 'somepassword'
                 }
 
-        response = self.client.post(self.create_url , data, format='json')
+        response = self.client.post(
+            self.create_url,
+            data,
+            format='json'
+        )
         user = User.objects.latest('id')
         token = Token.objects.get(user=user)
         self.assertEqual(response.data['token'], token.key)
@@ -115,16 +120,18 @@ class AccountsTest(APITestCase):
             'email':  'testing',
             'passsword': 'foobarbaz'
         }
-
-
-        response = self.client.post(self.create_url, data, format='json')
+        response = self.client.post(
+            self.create_url,
+            data,
+            format='json'
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 1)
         self.assertEqual(len(response.data['email']), 1)
 
     def test_create_user_with_no_email(self):
         data = {
-                'username' : 'foobar',
+                'username': 'foobar',
                 'email': '',
                 'password': 'foobarbaz'
         }
@@ -149,9 +156,6 @@ class AccountsTest(APITestCase):
         token_from_response = response.data['token']
         self.assertEqual(token_from_database.key, token_from_response)
 
-
-
-
     def test_users_sorting_from_max_posts(self):
         """
         Check users sorting from max posts.
@@ -162,7 +166,7 @@ class AccountsTest(APITestCase):
         max_posts_user = self.test_user
 
         # create 3 posts to max_posts_user
-        for iter in range(1,4,1):
+        for iter in range(1, 4, 1):
             post_title = "Post# %s" % (iter)
             Post.objects.create(
                 owner=max_posts_user,
@@ -178,7 +182,7 @@ class AccountsTest(APITestCase):
         )
 
         # create 2 posts to middle_posts_user
-        for iter in range(1,3,1):
+        for iter in range(1, 3, 1):
             post_title = "Post# %s" % (iter)
             Post.objects.create(
                 owner=middle_posts_user,
@@ -194,7 +198,7 @@ class AccountsTest(APITestCase):
         )
 
         # create 1 post to min_posts_user
-        for iter in range(1,2,1):
+        for iter in range(1, 2, 1):
             post_title = "Post# %s" % (iter)
             Post.objects.create(
                 owner=min_posts_user,
@@ -209,7 +213,10 @@ class AccountsTest(APITestCase):
         response_with_max_sorting = view(request_max)
         result_max = response_with_max_sorting.render()
         # check if max_posts_user on top of response data
-        self.assertEqual(result_max.data[0]['username'], max_posts_user.username)
+        self.assertEqual(
+            result_max.data[0]['username'],
+            max_posts_user.username
+        )
 
     def test_users_sorting_from_min_posts(self):
         """
@@ -221,7 +228,7 @@ class AccountsTest(APITestCase):
         max_posts_user = self.test_user
 
         # create 3 posts to max_posts_user
-        for iter in range(1,4,1):
+        for iter in range(1, 4, 1):
             post_title = "Post# %s" % (iter)
             Post.objects.create(
                 owner=max_posts_user,
@@ -237,7 +244,7 @@ class AccountsTest(APITestCase):
         )
 
         # create 2 posts to middle_posts_user
-        for iter in range(1,3,1):
+        for iter in range(1, 3, 1):
             post_title = "Post# %s" % (iter)
             Post.objects.create(
                 owner=middle_posts_user,
@@ -251,9 +258,9 @@ class AccountsTest(APITestCase):
             'test3@example.com',
             'testpassword3'
         )
-        
+
         # create 1 post to min_posts_user
-        for iter in range(1,2,1):
+        for iter in range(1, 2, 1):
             post_title = "Post# %s" % (iter)
             Post.objects.create(
                 owner=min_posts_user,
@@ -268,4 +275,7 @@ class AccountsTest(APITestCase):
         response_with_min_sorting = view(request_min, sorting='from_min')
         result_min = response_with_min_sorting.render()
         # check if min_posts_user on top of response data
-        self.assertEqual(result_min.data[0]['username'], min_posts_user.username)
+        self.assertEqual(
+            result_min.data[0]['username'],
+            min_posts_user.username
+        )

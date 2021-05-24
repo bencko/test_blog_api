@@ -3,13 +3,11 @@ from rest_framework import serializers
 from .models import Post, Subscribe, ReadedPost
 
 
-
 class PostSerializer(serializers.ModelSerializer):
     """
     Post serializer
     """
 
-    
     class Meta:
         model = Post
         fields = ['id', 'title', 'text', 'created_at', 'owner']
@@ -17,7 +15,6 @@ class PostSerializer(serializers.ModelSerializer):
             'owner': {'read_only': True}
         }
 
-  
 
 class SubscribeSerializer(serializers.ModelSerializer):
     class Meta:

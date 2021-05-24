@@ -12,16 +12,20 @@ from datetime import datetime
 get_user_model()._meta.get_field('email')._unique = True
 get_user_model()._meta.get_field('email').blank = False
 get_user_model()._meta.get_field('email').null = False
+
+
 # catch signal for generating auth token
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_subscribes_list(sender, instance=None, created=False, **kwargs):
     if created:
         SubscribesList.objects.create(owner=instance)
+
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_readed_posts_list(sender, instance=None, created=False, **kwargs):
@@ -33,10 +37,15 @@ def get_subs_list(self):
     my_subs_list = SubscribesList.objects.get(owner=self)
     return my_subs_list
 
+
 def get_posts_from_date(self, start_date):
     today = datetime.today()
-    posts = Post.objects.filter(owner=self, created_at__range=[start_date, today])
+    posts = Post.objects.filter(
+        owner=self,
+        created_at__range=[start_date, today]
+    )
     return posts
+
 
 def check_in_readed_posts(self, data):
     my_r_list = ReadedPostsList.objects.get(owner=self)
@@ -48,6 +57,7 @@ def check_in_readed_posts(self, data):
         except Exception as e:
             print(e)
     return False
+
 
 def check_in_feed(self, data):
     try:
@@ -66,14 +76,3 @@ get_user_model().add_to_class("get_subs_list", get_subs_list)
 get_user_model().add_to_class("get_posts_from_date", get_posts_from_date)
 get_user_model().add_to_class("check_in_readed_posts", check_in_readed_posts)
 get_user_model().add_to_class("check_in_feed", check_in_feed)
-
-
-"""
- if post_id is not None:
-        try:
-            res = my_r_list.were_read.all().get(post_id=post_id)
-            return True
-        except Exception as e:
-            print(e)
-            return False
-"""
