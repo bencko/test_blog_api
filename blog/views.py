@@ -201,10 +201,10 @@ class ReadedPostsView(generics.GenericAPIView, mixins.CreateModelMixin):
             --data '{"post":"14"}' http://127.0.0.1:8000/api/blog/readed/ - mark post which id=14 as readed\n 
         """
         already = request.user.check_in_readed_posts(request.data)
-        print(already)
+        #print(already)
         if not already:
             in_feed = request.user.check_in_feed(request.data)
-            print(in_feed)
+            #print(in_feed)
             if in_feed:
                 return self.create(request, *args, **kwargs)
             return Response({'detail':'This post is not in feed'}, status=status.HTTP_400_BAD_REQUEST)
